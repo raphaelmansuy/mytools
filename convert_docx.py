@@ -7,8 +7,8 @@
 #     "loguru",
 #     "pydantic>=2.0.0",
 #     "python-dotenv",
-#     "rich",  # Added rich for enhanced terminal support
-#     "typing",  # For type hints
+#     "rich",
+#     "typing",
 # ]
 # ///
 
@@ -30,7 +30,12 @@ def markdown_to_docx(
 ) -> None:
     """
     Convert Markdown to DOCX with Pandoc using advanced formatting options
-    
+
+    This function leverages Pandoc to provide precise control over the conversion process,
+    ensuring consistent formatting and proper handling of special elements like math equations.
+    The use of a reference DOCX template allows for maintaining brand-consistent styling,
+    while the resource directory ensures all images and assets are correctly embedded.
+
     Args:
         input_md: Path to input Markdown file
         output_docx: Path for output DOCX file
@@ -42,12 +47,12 @@ def markdown_to_docx(
     
     cmd = [
         "pandoc",
-        "-s",  # Standalone document
-        "--mathml",  # Preserve math equations
-        "--columns=80",  # Control text width
-        "--toc",  # Add table of contents
-        "--metadata", "title=Document",  # Set metadata
-        "-f", "markdown+emoji+smart",  # Enable extended Markdown features
+        "-s",
+        "--mathml",
+        "--columns=80",
+        "--toc",
+        "--metadata", "title=Document",
+        "-f", "markdown+emoji+smart",
         input_md,
         "-o", output_docx
     ]
