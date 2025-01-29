@@ -19,8 +19,6 @@ from typing import Optional, List, Union
 from rich import print
 from rich.console import Console
 from rich.panel import Panel
-from rich.spinner import Spinner
-from rich.progress import Progress
 
 console = Console()
 
@@ -61,7 +59,7 @@ def markdown_to_docx(
         cmd.extend(["--resource-path", str(resource_dir)])
     
     try:
-        with Spinner("Converting Markdown to DOCX..."):
+        with console.status("Converting Markdown to DOCX...", spinner='dots'):
             result = subprocess.run(
                 cmd,
                 check=True,
