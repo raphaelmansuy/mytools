@@ -3,41 +3,41 @@
 # /// script
 # requires-python = ">=3.11"
 # dependencies = [
-#     "pytubefix"
+#     "yt-dlp"
 # ]
 # ///
 
 import sys
-from pytubefix import YouTube
-from pytubefix.cli import on_progress
+import yt_dlp
 
-def download_video(url, use_oauth=False, use_po_token=False):
+# This script downloads public YouTube videos using yt-dlp.
+# For most videos, cookies are NOT required. If you encounter age or region restrictions, see yt-dlp docs.
+
+def download_video(url):
     try:
-        yt = YouTube(
-            url,
-            use_oauth=use_oauth,
-            allow_oauth_cache=True,
-            use_po_token=use_po_token,
-            client="WEB",
-            on_progress_callback=on_progress
-        )
-        
-        print(f"Title: {yt.title}")
-        ys = yt.streams.get_highest_resolution()
-        ys.download()
-        print("Download completed successfully!")
-        
+        ydl_opts = {
+            'format': 'bestvideo+bestaudio/best',
+            'outtmpl': '%(title)s.%(ext)s',
+            'merge_output_format': 'mp4',
+            'progress_hooks': [on_progress],
+        }
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=True)
+            print(f"Title: {info['title']}")
+            print("Download completed successfully!")
     except Exception as e:
         print(f"Error: {e}")
-        if "private" in str(e).lower():
-            print("Try running with OAuth authentication for private videos")
+
+def on_progress(d):
+    if d['status'] == 'downloading':
+        print(f"Downloading: {d['_percent_str']} at {d['_speed_str']}, ETA {d['_eta_str']}", end='\r')
+    elif d['status'] == 'finished':
+        print("Download finished")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: ./downloader.py <YouTube_URL> [--oauth] [--po-token]")
+        print("Usage: ./youtube_downloader.py <YouTube_URL>")
         sys.exit(1)
     
     url = sys.argv[1]
-    use_oauth = "--oauth" in sys.argv
-    use_po_token = "--po-token" in sys.argv
-    download_video(url, use_oauth, use_po_token)
+    download_video(url)
